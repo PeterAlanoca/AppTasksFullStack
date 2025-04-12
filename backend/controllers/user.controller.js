@@ -142,8 +142,6 @@ exports.login = async (req, res) => {
     }
 };
 
-
-
 exports.profile = async (req, res) => {
     try {
         const user = req.user;
@@ -170,5 +168,4 @@ exports.profile = async (req, res) => {
             message: 'Error interno del servidor'
         });
     }
-
 };
