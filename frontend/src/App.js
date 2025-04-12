@@ -1,24 +1,17 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Login from './components/Login';
+import Dashboard from './components/Dashboard';
 
 function App() {
   return (
-    <div className="container mt-5 text-center">
-      <h1 className="text-primary">¡Hola Mundo!</h1>
-      <p className="lead">Ahora con Bootstrap 🎨</p>
-      
-      <button className="btn btn-success mx-2">
-        Botón primario
-      </button>
-      
-      <button className="btn btn-outline-danger mx-2">
-        Botón secundario
-      </button>
-
-      <div className="alert alert-warning mt-4">
-        Esto es una alerta de Bootstrap.
-      </div>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+    </Router>
   );
 }
 
