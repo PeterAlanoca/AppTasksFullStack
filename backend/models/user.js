@@ -14,12 +14,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   User.init({
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false
-    },
     name: DataTypes.STRING,
     email: {
       type: DataTypes.STRING,
@@ -36,12 +30,7 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   User.associate = (models) => {
-    User.hasMany(models.Task, { 
-      foreignKey: {
-        name: "userId",
-        allowNull: false
-      },
-    });
-  };
+    User.hasMany(models.Task, { foreignKey: "userId" });
+  }
   return User;
 };

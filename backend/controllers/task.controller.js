@@ -1,13 +1,55 @@
-const { User } = require('../models');
+const { Task } = require('../models');
 const { validationResult } = require('express-validator');
-const bcrypt = require("bcryptjs");
-const jwt = require('jsonwebtoken');
 
-require('dotenv').config();
+exports.register = async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const errorMessages = errors.array()
+                .map(err => err.msg)
+                .join('\n'); 
+            
+            return res.status(400).json({
+                success: false,
+                message: errorMessages 
+            }); 
+        }
+     
+        const user = req.user;
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const TOKEN_EXPIRATION = process.env.TOKEN_EXPIRATION || '1h';
+        const { title, description, status, dueDate } = req.body;
+        
+        const newTask = {
+            userId: user.id,
+            title,  
+            description,
+            status, 
+            dueDate,
+        };
+        const task = await Task.create(newTask);
 
+        const data = {
+            id: task.id,
+            title: task.title,
+            description: task.description,
+            status: task.status,
+            dueDate: task.dueDate
+        };
+
+        return res.status(201).json({
+            success: true,
+            data: data,
+            message: 'Tarea registrada exitosamente.'
+        });
+    } catch (error) {
+        console.error('Error en register:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error interno del servidor',
+        });
+    }
+};
+/*
 exports.register = async (req, res) => {
     try {
         const errors = validationResult(req);
@@ -119,7 +161,7 @@ exports.login = async (req, res) => {
             }
         );
 
-        return res.status(200).json({
+        return res.json({
             success: true,
             data: {
                 token,
@@ -156,10 +198,10 @@ exports.profile = async (req, res) => {
             name: user.name,
         };
 
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
             data: userResponse,
-            message: 'Ok'
+            message: 'success'
         });
     } catch (error) {
         console.error('Error en login:', error);
@@ -168,4 +210,4 @@ exports.profile = async (req, res) => {
             message: 'Error interno del servidor'
         });
     }
-};
+};*/

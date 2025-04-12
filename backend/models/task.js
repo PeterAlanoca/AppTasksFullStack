@@ -14,32 +14,22 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Task.init({
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false
-    },
-    userId: DataTypes.INTEGER,
     title: DataTypes.STRING,
     description: DataTypes.STRING,
-    state: DataTypes.STRING,
-    deadline: {
+    status: DataTypes.STRING,
+    dueDate: {
       type: DataTypes.DATE,
       allowNull: true
-    }
+    },
+    userId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Task',
   });
 
   Task.associate = (models) => {
-    Task.belongsTo(models.User, { 
-      foreignKey: {
-        name: "userId",
-        allowNull: false
-      }
-    });
+    Task.belongsTo(models.User, { foreignKey: "userId" });
   };
+
   return Task;
 };

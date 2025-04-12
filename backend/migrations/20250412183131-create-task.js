@@ -9,17 +9,25 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      userId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Users',
+          key: 'id'
+        }
+      },
       title: {
         type: Sequelize.STRING
       },
       description: {
         type: Sequelize.STRING
       },
-      state: {
+      status: {
         type: Sequelize.STRING
       },
-      deadline: {
-        type: Sequelize.STRING
+      dueDate: {
+        type: Sequelize.DATE
       },
       createdAt: {
         allowNull: false,

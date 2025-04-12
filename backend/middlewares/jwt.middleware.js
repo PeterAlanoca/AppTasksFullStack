@@ -3,7 +3,6 @@ const { User } = require('../models');
 require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const TOKEN_EXPIRATION = process.env.TOKEN_EXPIRATION || '1h';
 
 exports.jwtAuth = async (req, res, next) => {
     try {
@@ -23,18 +22,8 @@ exports.jwtAuth = async (req, res, next) => {
         if (!user)  {
             return res.status(404).json({ message: "Usuario no encontrado." });
         }
-
-        const userResponse = {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-        };
-
-        return res.status(201).json({
-            success: true,
-            data: userResponse,
-            message: 'Infomación'
-        });
+        req.user = user;
+        next();
     } catch (error) {
         console.error('Error en auth:', error);
         if (error.name === 'TokenExpiredError') {
