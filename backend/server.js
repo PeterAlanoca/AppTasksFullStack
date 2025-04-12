@@ -1,4 +1,20 @@
-const express = require("express");
+const express = require('express');
+const app = express();
+const userRoutes = require('./routes/user.routes');
+//const pedidoRoutes = require('./routes/pedido.routes');
+
+app.use(express.json());
+app.use('/api', userRoutes);
+//app.use('/api', pedidoRoutes);
+
+const PORT = process.env.PORT || 3001;
+
+app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));
+
+
+module.exports=app
+
+/*const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -102,4 +118,4 @@ app.put("/api/users/:id/status", (req, res) => {
     res.json({ message: `Estado del usuario actualizado a ${status}` });
 });
 
-app.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`));*/
