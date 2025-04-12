@@ -39,7 +39,7 @@ exports.register = async (req, res) => {
             dueDate: task.dueDate
         };
 
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
             data: data,
             message: 'Tarea registrada exitosamente.'
@@ -53,7 +53,7 @@ exports.register = async (req, res) => {
     }
 };
 
-exports.getByUser  = async (req, res) => {
+exports.getByUser = async (req, res) => {
     try {
      
         const user = req.user;
@@ -63,7 +63,7 @@ exports.getByUser  = async (req, res) => {
                 exclude: ['updatedAt', 'userId']
             },
             where: { 
-              userId: user.id 
+                userId: user.id 
             },
             order: [['id', 'DESC']]
         });
@@ -82,10 +82,65 @@ exports.getByUser  = async (req, res) => {
             };
         });
 
-        return res.status(201).json({
+        return res.status(200).json({
             success: true,
             data: data,
             message: 'Tarea registrada exitosamente.'
+        });
+    } catch (error) {
+        console.error('Error en register:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error interno del servidor',
+        });
+    }
+};
+
+exports.getById = async (req, res) => {
+    try {
+     
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({
+                success: false,
+                message: 'ID inválido.'
+            });
+        }
+
+        const user = req.user;
+
+        const task = await Task.findOne({
+            attributes: { 
+                exclude: ['updatedAt', 'userId']    
+            },
+            where: { 
+              id: id,
+              userId: user.id
+            }
+        });
+          
+        if (!task) {
+            return res.status(400).json({
+                success: false,
+                message: 'Tarea no encontrada.'
+            });
+        }
+
+        const data = {
+            id: task.id,
+            title: task.title,
+            description: task.description,
+            status: task.status,
+            dueDate: (task.dueDate && moment(task.dueDate).isValid()) 
+                    ? moment(task.dueDate).format('D [de] MMMM [de] YYYY') 
+                    : null,
+            createdAt: moment(task.createdAt).format('D [de] MMMM [de] YYYY hh:mm A'),
+        };
+
+        return res.status(200).json({
+            success: true,
+            data: data,
+            message: 'Ok'
         });
     } catch (error) {
         console.error('Error en register:', error);
