@@ -2,6 +2,7 @@ const { User } = require('../models');
 const { validationResult } = require('express-validator');
 const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken');
+
 require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -50,11 +51,11 @@ exports.register = async (req, res) => {
         return res.status(201).json({
             success: true,
             data: userResponse,
-            message: 'Usuario creado exitosamente.'
+            message: 'Usuario registrado exitosamente.'
         });
 
     } catch (error) {
-        console.log(error);
+        console.error('Error en register:', error);
         if (error.name === 'SequelizeUniqueConstraintError') {
             return res.status(400).json({
                 success: false,
@@ -74,6 +75,7 @@ exports.register = async (req, res) => {
         }
     }
 };
+
 exports.login = async (req, res) => {
     try {
         const errors = validationResult(req);
@@ -97,7 +99,6 @@ exports.login = async (req, res) => {
             });
         }
 
-        // Comparación segura de contraseñas
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(401).json({
@@ -142,50 +143,32 @@ exports.login = async (req, res) => {
 };
 
 
-/*
 
-*/
-/*
-exports.obtenerClientes = async (req, res) => {
-    const clientes = await Cliente.findAll();
-    res.json(clientes);
-};
-
-
-exports.obtenerClientePorId = async (req, res) => {
-    const { id } = req.params;
-    const cliente = await Cliente.findByPk(id);
-
-    if (!cliente) {
-        return res.status(404).json({ mensaje: 'Cliente no encontrado' });
-    }
-    res.json(cliente);
-};
-
-exports.actualizarCliente = async (req, res) => {
-    const { id } = req.params;
-    const cliente = await Cliente.findByPk(id);
-
-    if (!cliente) {
-        return res.status(404).json({ mensaje: 'Cliente no encontrado' });
-    }
-
-    await cliente.update(req.body);
-    res.json(cliente);
-};
-
-exports.eliminarCliente = async (req, res) => {
+exports.profile = async (req, res) => {
     try {
-        const { id } = req.params;
-        const cliente = await Cliente.findByPk(id);
+        const user = req.user;
 
-        if (!cliente) {
-            return res.status(404).json({ mensaje: 'Cliente no encontrado' });
+        if (!user)  {
+            return res.status(404).json({ message: "Usuario no encontrado." });
         }
 
-        await cliente.destroy();
-        res.json({ mensaje: 'Cliente eliminado correctamente' });
+        const userResponse = {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+        };
+
+        return res.status(201).json({
+            success: true,
+            data: userResponse,
+            message: 'success'
+        });
     } catch (error) {
-        res.status(500).json({ mensaje: 'Error al eliminar el cliente', error: error.message });
+        console.error('Error en login:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error interno del servidor'
+        });
     }
-};*/
+
+};

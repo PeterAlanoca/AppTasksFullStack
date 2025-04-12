@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator'); 
-const { register, login } = require('../controllers/user.controller');
+const { jwtAuth } = require('../middlewares/jwt.middleware.js');
+const { register, login, profile } = require('../controllers/user.controller');
 
 router.post(
     '/auth/register', 
@@ -20,6 +21,12 @@ router.post(
         body("password").isLength({ min: 6 }).withMessage("La contraseña debe tener al menos 6 caracteres"),
     ],
     login
+);
+
+router.get(
+    '/auth/me', 
+    jwtAuth,
+    profile
 );
 
 module.exports = router;
