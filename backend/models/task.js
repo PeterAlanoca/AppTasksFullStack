@@ -15,13 +15,13 @@ module.exports = (sequelize, DataTypes) => {
   }
   Task.init({
     title: DataTypes.STRING,
+    userId: DataTypes.INTEGER,
     description: DataTypes.STRING,
     status: DataTypes.STRING,
     dueDate: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    userId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Task',

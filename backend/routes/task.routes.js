@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator'); 
 const { jwtAuth } = require('../middlewares/jwt.middleware.js');
-const { register } = require('../controllers/task.controller');
+const { register, getByUser } = require('../controllers/task.controller');
 
 router.post(
     '/tasks', 
@@ -13,6 +13,12 @@ router.post(
         body("status").notEmpty().withMessage("El estado es obligatorio")
     ],
     register
+);
+
+router.get(
+    '/tasks', 
+    jwtAuth,
+    getByUser
 );
 
 module.exports = router;
