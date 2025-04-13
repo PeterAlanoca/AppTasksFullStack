@@ -151,6 +151,77 @@ exports.getById = async (req, res) => {
     }
 };
 
+exports.updateById = async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({
+                success: false,
+                message: 'ID inválido.'
+            });
+        }
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const errorMessages = errors.array()
+                .map(err => err.msg)
+                .join('\n'); 
+            
+            return res.status(400).json({
+                success: false,
+                message: errorMessages 
+            }); 
+        }
+        const user = req.user;
+
+        const updates = req.body;
+
+        const [updatedRows] = await Task.update(updates, {
+            where: { 
+                id: id,
+                userId: user.id 
+            },
+            returning: true 
+        });
+
+        if (updatedRows === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Tarea no encontrada o no tienes permisos'
+            });
+        }
+
+        const task = await Task.findOne({
+            where: { id: id },
+            attributes: { exclude: ['userId'] }
+        });
+
+        const data = {
+            id: task.id,
+            title: task.title,
+            description: task.description,
+            status: task.status,
+            dueDate: (task.dueDate && moment(task.dueDate).isValid()) 
+                    ? moment(task.dueDate).format('D [de] MMMM [de] YYYY') 
+                    : null,
+            createdAt: moment(task.createdAt).format('D [de] MMMM [de] YYYY hh:mm A'),
+        };
+
+        return res.status(200).json({
+            success: true,
+            data: data,
+            message: 'Tarea actualizada correctamente.'
+        });
+    } catch (error) {
+        console.error('Error en register:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error interno del servidor',
+        });
+    }
+};
+
+
 exports.deleteById = async (req, res) => {
     try {
      
@@ -174,7 +245,7 @@ exports.deleteById = async (req, res) => {
         if (deletedRows === 0) {
             return res.status(404).json({
                 success: false,
-                 message: 'Tarea no encontrada o no tienes permisos'
+                message: 'Tarea no encontrada o no tienes permisos'
             });
         }
 
