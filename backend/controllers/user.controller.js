@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 
 require('dotenv').config();
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || 'miclavesupersecreta';
 const TOKEN_EXPIRATION = process.env.TOKEN_EXPIRATION || '1h';
 
 exports.register = async (req, res) => {
