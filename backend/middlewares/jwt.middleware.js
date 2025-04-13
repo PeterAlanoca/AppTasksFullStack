@@ -19,8 +19,11 @@ exports.jwtAuth = async (req, res, next) => {
         const user = await User.findByPk(decoded.id, {
             attributes: { exclude: ['password'] }
         });
-        if (!user)  {
-            return res.status(404).json({ message: "Usuario no encontrado." });
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Usuario no encontrado'
+            });
         }
         req.user = user;
         next();

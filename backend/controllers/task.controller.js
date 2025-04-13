@@ -120,7 +120,7 @@ exports.getById = async (req, res) => {
         });
           
         if (!task) {
-            return res.status(400).json({
+            return res.status(404).json({
                 success: false,
                 message: 'Tarea no encontrada.'
             });
@@ -151,165 +151,42 @@ exports.getById = async (req, res) => {
     }
 };
 
-/*
-exports.register = async (req, res) => {
+exports.deleteById = async (req, res) => {
     try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            const errorMessages = errors.array()
-                .map(err => err.msg)
-                .join('\n'); 
-            
-            return res.status(400).json({
-                success: false,
-                message: errorMessages 
-            }); 
-        }
      
-        const { name, email, password } = req.body;
-        
-        const existingUser = await User.findOne({ where: { email } });
-        
-        if (existingUser) {
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
             return res.status(400).json({
                 success: false,
-                message: 'El correo electrónico ya está registrado.'
-            });
-        }
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const newUser = { 
-            name,  
-            email, 
-            password: hashedPassword 
-        };
-
-        const user = await User.create(newUser);
-
-        const userResponse = {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-        };
-
-        return res.status(201).json({
-            success: true,
-            data: userResponse,
-            message: 'Usuario registrado exitosamente.'
-        });
-
-    } catch (error) {
-        console.error('Error en register:', error);
-        if (error.name === 'SequelizeUniqueConstraintError') {
-            return res.status(400).json({
-                success: false,
-                message: 'Este correo ya está registrado. Si ya tienes una cuenta intenta iniciar sesión.',
-            });
-        
-        } else if (error.name === 'SequelizeValidationError') {
-            return res.status(400).json({
-                success: false,
-                message: 'El formato del correo electrónico no es correcto.'
-            });
-        } else {
-            return res.status(500).json({
-                success: false,
-                message: 'Error interno del servidor',
-            });
-        }
-    }
-};
-
-exports.login = async (req, res) => {
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({
-                success: false,
-                errors: errors.array().map(err => ({
-                    field: err.path,
-                    message: err.msg
-                }))
+                message: 'ID inválido.'
             });
         }
 
-        const { email, password } = req.body;
-        
-        const user = await User.findOne({ where: { email } });
-        if (!user) {
-            return res.status(401).json({ 
-                success: false,
-                message: 'Este correo no está registrado.'
-            });
-        }
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(401).json({
-                success: false,
-                message: 'La contraseña ingresada es incorrecta. Por favor, vuelve a intentarlo.'
-            });
-        }
-
-        const token = jwt.sign(
-            {
-                id: user.id,
-                email: user.email
-            },
-            JWT_SECRET,
-            { 
-                expiresIn: TOKEN_EXPIRATION,
-                algorithm: 'HS256'
-            }
-        );
-
-        return res.json({
-            success: true,
-            data: {
-                token,
-                expiresIn: TOKEN_EXPIRATION,
-                user: {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                }
-            },
-            message: `Bienvenido ${user.name}`
-        });
-
-    } catch (error) {
-        console.error('Error en login:', error);
-        return res.status(500).json({
-            success: false,
-            message: 'Error interno del servidor'
-        });
-    }
-};
-
-exports.profile = async (req, res) => {
-    try {
         const user = req.user;
 
-        if (!user)  {
-            return res.status(404).json({ message: "Usuario no encontrado." });
+        const deletedRows = await Task.destroy({
+            where: {
+                id: id,
+                userId: user.id
+            }
+        });
+        
+        if (deletedRows === 0) {
+            return res.status(404).json({
+                success: false,
+                 message: 'Tarea no encontrada o no tienes permisos'
+            });
         }
 
-        const userResponse = {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-        };
-
-        return res.status(201).json({
+        return res.status(200).json({
             success: true,
-            data: userResponse,
-            message: 'success'
+            message: 'Tarea eliminada correctamente.'
         });
     } catch (error) {
-        console.error('Error en login:', error);
+        console.error('Error en register:', error);
         return res.status(500).json({
             success: false,
-            message: 'Error interno del servidor'
+            message: 'Error interno del servidor',
         });
     }
-};*/
+};

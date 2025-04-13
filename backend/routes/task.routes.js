@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator'); 
 const { jwtAuth } = require('../middlewares/jwt.middleware.js');
-const { register, getByUser, getById } = require('../controllers/task.controller');
+const { register, getByUser, getById, deleteById } = require('../controllers/task.controller');
 
 router.post(
     '/tasks', 
@@ -25,6 +25,12 @@ router.get(
     '/tasks/:id', 
     jwtAuth,
     getById
+);
+
+router.delete(
+    '/tasks/:id', 
+    jwtAuth,
+    deleteById
 );
 
 module.exports = router;
