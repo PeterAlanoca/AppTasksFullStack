@@ -19,6 +19,8 @@ const Dashboard = () => {
   });
   const [selectedTask, setSelectedTask] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '', bg: 'success' });
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [taskDetails, setTaskDetails] = useState(null);
 
   const fetchTasks = async () => {
     try {
@@ -143,6 +145,25 @@ const Dashboard = () => {
     }
   };
 
+  const handleView = async (id) => {
+    try {
+      const httpResponse = await api.get(`/tasks/${id}`);
+      const response = httpResponse.data;
+      if (response.success) {
+        setTaskDetails(response.data);
+        setShowViewModal(true);
+      } else {
+        setToast({ show: true, message: response.message || 'No se pudo cargar la tarea.', bg: 'danger' });
+      }
+    } catch (err) {
+      setToast({
+        show: true,
+        message: err.response?.data?.message || err.message || 'Error al obtener la tarea.',
+        bg: 'danger'
+      });
+    }
+  };
+
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -156,7 +177,6 @@ const Dashboard = () => {
         </div>
       </nav>
 
-      {/* Crear Tarea Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Crear Nueva Tarea</Modal.Title>
@@ -210,7 +230,6 @@ const Dashboard = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* Editar Tarea Modal */}
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Editar Tarea</Modal.Title>
@@ -266,6 +285,27 @@ const Dashboard = () => {
         </Modal.Footer>
       </Modal>
 
+      <Modal show={showViewModal} onHide={() => setShowViewModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Detalles de la Tarea</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {taskDetails && (
+            <div>
+              <p><strong>ID:</strong> {taskDetails.id}</p>
+              <p><strong>Título:</strong> {taskDetails.title}</p>
+              <p><strong>Descripción:</strong> {taskDetails.description}</p>
+              <p><strong>Estado:</strong> {taskDetails.status}</p>
+              <p><strong>Fecha Límite:</strong> {taskDetails.dueDate || 'No especificada'}</p>
+              <p><strong>Creado:</strong> {taskDetails.createdAt}</p>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowViewModal(false)}>Cerrar</Button>
+        </Modal.Footer>
+      </Modal>
+
       <div className="container mt-4">
         {loading ? (
           <div className="text-center">
@@ -304,6 +344,9 @@ const Dashboard = () => {
                     <td>{task.status}</td>
                     <td>{task.createdAt}</td>
                     <td>
+                      <button className="btn btn-info btn-sm me-2" onClick={() => handleView(task.id)}>
+                        <i className="bi bi-eye"></i>
+                      </button>
                       <button className="btn btn-primary btn-sm me-2" onClick={() => openEditModal(task)}>
                         <i className="bi bi-pencil"></i>
                       </button>
