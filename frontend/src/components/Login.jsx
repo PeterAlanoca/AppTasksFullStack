@@ -19,18 +19,18 @@ const Login = () => {
         email, 
         password 
       }
-      const response = await api.post('/auth/login', request);
-
-      if (response.data.token) {
+      const httpResponse = await api.post('/auth/login', request);
+      const response = httpResponse.data
+      if (response.success) {
         localStorage.setItem('token', response.data.token);
+        navigate('/dashboard');
+      } else {
+        setError(response.message || 'Error al iniciar sesión.');
       }
-
-      navigate('/dashboard');
-      
-    } catch (error) {
+    } catch (err) {
       setError(
-        error.response?.data?.message || 
-        error.message || 
+        err.response?.data?.message || 
+        err.message || 
         'Error al iniciar sesión. Intenta nuevamente.'
       );
     } finally {
