@@ -4,8 +4,6 @@ const cors = require('cors');
 const userRoutes = require('./routes/user.routes');
 const taskRoutes = require('./routes/task.routes');
 
-const cors = require('cors');
-
 const allowedOrigins = [
   'http://localhost:3000',
   'https://tasks-app-i3ue.onrender.com'
