@@ -1,18 +1,40 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../api';
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('peter.alanoca@gmail.com');
+  const [password, setPassword] = useState('12345678');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false); 
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Validación simple (en producción usa autenticación real)
-    if (username === 'admin' && password === '123') {
+    setLoading(true);
+    setError('');
+
+    try {
+      const request =  { 
+        email, 
+        password 
+      }
+      const response = await api.post('/auth/login', request);
+
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+      }
+
       navigate('/dashboard');
-    } else {
-      alert('Credenciales incorrectas');
+      
+    } catch (error) {
+      setError(
+        error.response?.data?.message || 
+        error.message || 
+        'Error al iniciar sesión. Intenta nuevamente.'
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -20,15 +42,16 @@ const Login = () => {
     <div className="container d-flex vh-100 justify-content-center align-items-center">
       <div className="card p-4 shadow" style={{ width: '400px' }}>
         <h2 className="text-center mb-4">Iniciar Sesión</h2>
+
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label htmlFor="username" className="form-label">Usuario</label>
+            <label htmlFor="email" className="form-label">Correo electrónico</label>
             <input
-              type="text"
+              type="email" 
               className="form-control"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -40,10 +63,23 @@ const Login = () => {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              minLength="8"
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary w-100">Ingresar</button>
+          <button 
+            type="submit" 
+            className="btn btn-primary w-100"
+            disabled={loading}
+          >
+            {loading ? 'Cargando...' : 'Ingresar'}
+          </button>
+
+          {error && (
+            <div className="alert alert-danger mt-4" role="alert">
+              {error}
+            </div>
+          )}
         </form>
       </div>
     </div>
