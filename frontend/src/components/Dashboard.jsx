@@ -21,7 +21,9 @@ const Dashboard = () => {
   const [toast, setToast] = useState({ show: false, message: '', bg: 'success' });
   const [showViewModal, setShowViewModal] = useState(false);
   const [taskDetails, setTaskDetails] = useState(null);
-
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [userData, setUserData] = useState(null);
+  
   const fetchTasks = async () => {
     try {
       setError('');
@@ -164,6 +166,22 @@ const Dashboard = () => {
     }
   };
 
+  const fetchUserData = async () => {
+    try {
+      const response = await api.get('/auth/me');
+      if (response.data.success) {
+        setUserData(response.data.data); 
+        setShowUserModal(true);
+      }
+    } catch (err) {
+      setToast({
+        show: true,
+        message: 'Error al cargar información del usuario',
+        bg: 'danger'
+      });
+    }
+  };
+
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -171,9 +189,27 @@ const Dashboard = () => {
           <span className="navbar-brand" style={{ cursor: 'pointer' }} onClick={fetchTasks}>
             Gestión de Tareas
           </span>
-          <button className="btn btn-outline-light ms-auto" onClick={handleLogout}>
-            Cerrar Sesión
-          </button>
+          <div className="d-flex">
+            <button 
+              onClick={fetchUserData}
+              className="btn btn-outline-light me-2"
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0'
+              }}
+            >
+              <i className="bi bi-person"></i>
+            </button>
+            
+            <button className="btn btn-outline-light" onClick={handleLogout}>
+              Cerrar Sesión
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -303,6 +339,26 @@ const Dashboard = () => {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowViewModal(false)}>Cerrar</Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showUserModal} onHide={() => setShowUserModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Mi Información</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {userData && (
+            <div>
+              <p><strong>ID:</strong> {userData.id}</p>
+              <p><strong>Nombre:</strong> {userData.name}</p>
+              <p><strong>Email:</strong> {userData.email}</p>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowUserModal(false)}>
+            Cerrar
+          </Button>
         </Modal.Footer>
       </Modal>
 
