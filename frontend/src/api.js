@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: process.env.API_BASE_URL || 'http://localhost:3001/api',
+    baseURL: process.env.API_BASE_URL || 'https://apptasksfullstack.onrender.com/api',
     headers: {
         'Content-Type': 'application/json',
     },
