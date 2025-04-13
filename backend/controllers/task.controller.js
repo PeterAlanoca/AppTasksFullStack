@@ -85,7 +85,7 @@ exports.getByUser = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: data,
-            message: 'Tarea registrada exitosamente.'
+            message: 'Ok'
         });
     } catch (error) {
         console.error('Error en register:', error);
