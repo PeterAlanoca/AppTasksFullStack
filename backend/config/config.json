@@ -19,6 +19,12 @@
     "database": "tasks_postgress",
     "host": "dpg-cvtkdcre5dus73aags1g-a.oregon-postgres.render.com",
     "dialect": "postgres",
-    "port": "5432"
+    "port": "5432",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
   }
 }
