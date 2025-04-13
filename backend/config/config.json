@@ -14,10 +14,11 @@
     "dialect": "mysql"
   },
   "production": {
-    "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "username": "tasks_postgress_user",
+    "password": "Qba18Pza6nNhr30eQE44j4zu7M7uS7Lk",
+    "database": "tasks_postgress",
+    "host": "dpg-cvtkdcre5dus73aags1g-a.oregon-postgres.render.com",
+    "dialect": "postgres",
+    "port": "5432"
   }
 }
