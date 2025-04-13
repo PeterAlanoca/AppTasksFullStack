@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 
-const Login = () => {
-  const [email, setEmail] = useState('peter.alanoca@gmail.com');
-  const [password, setPassword] = useState('12345678');
+const Register = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -16,23 +17,22 @@ const Login = () => {
 
     try {
       const request = { 
+        name, 
         email, 
         password 
       };
-      const httpResponse = await api.post('/auth/login', request);
+      const httpResponse = await api.post('/auth/register', request);
       const response = httpResponse.data;
-
       if (response.success) {
-        localStorage.setItem('token', response.data.token);
-        navigate('/dashboard');
+        navigate('/'); 
       } else {
-        setError(response.message || 'Error al iniciar sesión.');
+        setError(response.message || 'Error al registrar usuario.');
       }
     } catch (err) {
       setError(
         err.response?.data?.message || 
         err.message || 
-        'Error al iniciar sesión. Intenta nuevamente.'
+        'Error al registrar. Intenta nuevamente.'
       );
     } finally {
       setLoading(false);
@@ -42,13 +42,24 @@ const Login = () => {
   return (
     <div className="container d-flex vh-100 justify-content-center align-items-center">
       <div className="card p-4 shadow" style={{ width: '400px' }}>
-        <h2 className="text-center mb-4">Iniciar Sesión</h2>
+        <h2 className="text-center mb-4">Registro de Usuario</h2>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
+            <label htmlFor="name" className="form-label">Nombre completo</label>
+            <input
+              type="text"
+              className="form-control"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-3">
             <label htmlFor="email" className="form-label">Correo electrónico</label>
             <input
-              type="email" 
+              type="email"
               className="form-control"
               id="email"
               value={email}
@@ -73,18 +84,8 @@ const Login = () => {
             className="btn btn-primary w-100"
             disabled={loading}
           >
-            {loading ? 'Cargando...' : 'Ingresar'}
+            {loading ? 'Registrando...' : 'Registrarme'}
           </button>
-
-          <p className="mt-3 text-center">
-            ¿No tienes cuenta?{' '}
-            <span 
-              style={{ color: '#0d6efd', cursor: 'pointer', textDecoration: 'underline' }}
-              onClick={() => navigate('/register')}
-            >
-              Regístrate aquí
-            </span>.
-          </p>
 
           {error && (
             <div className="alert alert-danger mt-4" role="alert">
@@ -92,9 +93,13 @@ const Login = () => {
             </div>
           )}
         </form>
+
+        <p className="mt-3 text-center">
+          ¿Ya tienes cuenta? <a href="/">Inicia sesión aquí</a>.
+        </p>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default Register;
