@@ -8,31 +8,31 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const httpResponse = await api.get('/tasks');
-        const response = httpResponse.data;
-        if (response.success) {
-          setTasks(response.data);
-        } else {
-          setError(response.message || 'Error al obtener las tareas');
-        }
-      } catch (err) {
-        setError(
-          err.response?.data?.message || 
-          err.message || 
-          'Error al cargar las tareas.'
-        );
-        if (err.response?.status === 401) {
-          localStorage.removeItem('token');
-          navigate('/');
-        }
-      } finally {
-        setLoading(false);
+  const fetchTasks = async () => {
+    try {
+      const httpResponse = await api.get('/tasks');
+      const response = httpResponse.data;
+      if (response.success) {
+        setTasks(response.data);
+      } else {
+        setError(response.message || 'Error al obtener las tareas');
       }
-    };
+    } catch (err) {
+      setError(
+        err.response?.data?.message || 
+        err.message || 
+        'Error al cargar las tareas.'
+      );
+      if (err.response?.status === 401) {
+        localStorage.removeItem('token');
+        navigate('/');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchTasks();
   }, [navigate]);
 
@@ -67,8 +67,13 @@ const Dashboard = () => {
     <>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container-fluid">
-          <span className="navbar-brand">Gestión de Tareas</span>
-          <button 
+          <span 
+            className="navbar-brand" 
+            style={{cursor: 'pointer'}}
+            onClick={fetchTasks} 
+          >
+            Gestión de Tareas
+          </span>          <button 
             className="btn btn-outline-light ms-auto" 
             onClick={handleLogout}
           >
